@@ -114,7 +114,7 @@ button_link_html = """
 components.html(button_link_html)
 
 # Streamlit app
-st.title("Length of Stay Prediction")
+st.title("Length of ICU Stay Prediction")
 # Center content
 with st.container():
     st.markdown('<div class="centered">', unsafe_allow_html=True)
