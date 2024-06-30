@@ -6,7 +6,7 @@ from xgboost import XGBRegressor
 from sklearn.preprocessing import StandardScaler
 import joblib
 from math import ceil
-from sklearn.metrics import mean_squared_error, root_mean_squared_error
+from sklearn.metrics import mean_squared_error
 from datetime import datetime, timedelta
 
 def set_custom_style():
@@ -120,7 +120,7 @@ with st.container():
     st.markdown('<div class="centered">', unsafe_allow_html=True)
 
     # Input fields for features
-    rcount = st.number_input("Number of Readmission", min_value=0, key='rcount', help="Number of times the patient was readmitted")
+    rcount = st.number_input("Number of Readmission Patient to ICU", min_value=0, key='rcount', help="Number of times the patient was readmitted")
 
     # Psychological Disorder Major
     psychologicaldisordermajor = st.radio(
@@ -225,8 +225,17 @@ with st.container():
         # Calculate discharge date
         discharge_date = start_date + timedelta(days=rounded_prediction)
 
-        # Inside the predict button block where RMSE is calculated
-        rmse_all = root_mean_squared_error(y, model.predict(X))
+        # Update the original DataFrame with the new patient data
+        new_patient_df = input_data.copy()
+        new_patient_df['lengthofstay'] = rounded_prediction
+        combined_df = pd.concat([df, new_patient_df], ignore_index=True)
+
+        # Separate features and target variable from the combined DataFrame
+        X_combined = combined_df[features]
+        y_combined = combined_df['lengthofstay']
+
+        # Recalculate RMSE with the new patient data
+        rmse_all = np.sqrt(mean_squared_error(y_combined, model.predict(X_combined)))
 
     # Display the prediction results
     if rounded_prediction is not None and discharge_date is not None:
@@ -234,8 +243,8 @@ with st.container():
         f"""
         <div class="output-box">
             <h3>Predicted Length of Stay: {rounded_prediction} days</h3>
-            <p>Discharge Date: {discharge_date.strftime('%Y-%m-%d')}</p>
-            <p>Root Mean Squared Error (RMSE) for all data: {rmse_all:.6f}</p>
+            <p>Expected Discharge Date: {discharge_date.strftime('%Y-%m-%d')}</p>
+            <p>Root Mean Squared Error (RMSE) including new patient data: {rmse_all:.6f}</p>
         </div>
         """,
         unsafe_allow_html=True
