@@ -113,10 +113,10 @@ set_custom_style()
 row1 = st.columns(2)
 
 with row1[0]:
-    st.image('web2.png', use_column_width="auto", width=100)
+    st.image('web2.png', use_column_width="auto", width=350)
 
 with row1[1]:
-    st.image('ukm_logo.png', use_column_width="never", width=150)
+    st.image('ukm_logo.png', use_column_width="never", width=200)
 
 
 # Load your preprocessed data (assuming it's saved as 'cleaned_df.csv')
